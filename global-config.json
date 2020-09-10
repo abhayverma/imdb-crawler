@@ -1,0 +1,30 @@
+{
+  "crawler": {
+    "baseURL": "https://www.imdb.com/search/title",
+    "count": 100,
+    "groups": "top_1000",
+    "sort": "user_rating",
+    "maxConnections": 10,
+    "elements": {
+      "component": ".lister-item.mode-advanced",
+      "title": ".lister-item-content .lister-item-header > a",
+      "year": ".lister-item-content .lister-item-year",
+      "description": ".lister-item-content > p.text-muted ~ p.text-muted",
+      "certificate": ".lister-item-content > p.text-muted .certificate",
+      "runTime": ".lister-item-content > p.text-muted .runtime",
+      "genre": ".lister-item-content > p.text-muted .genre",
+      "rating": ".lister-item-content .ratings-bar .ratings-imdb-rating strong"
+    }
+  },
+  "default": {
+    "limit": 10,
+    "MIN_STR_LENGTH": 3
+  },
+  "api": {
+    "url": "http://localhost:3000",
+    "search": "http://localhost:3000/api/crawler/search",
+    "imdbUrl": "https://www.imdb.com",
+    "scrapeData": "http://localhost:3000/api/crawler/runScraper",
+    "port": 3000
+  }
+}

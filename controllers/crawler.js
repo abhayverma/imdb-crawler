@@ -55,6 +55,19 @@ module.exports = {
       });
     });
   },
+  reloadData: function (req, res) {
+    return new Promise(function (resolve, reject) {
+      module.exports.scrapeData()
+        .then(response => {
+          console.log(response);
+          const database = require('../database.json');
+          return res.status(200).json({
+            success: true,
+            data: database
+          });
+        });
+    });
+  },
   search: function (req, res) {
     return new Promise(function (resolve, reject) {
       const database = require('../database.json');

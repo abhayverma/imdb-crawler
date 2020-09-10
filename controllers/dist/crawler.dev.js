@@ -58,6 +58,20 @@ module.exports = {
       });
     });
   },
+  reloadData: function reloadData(req, res) {
+    return new Promise(function (resolve, reject) {
+      module.exports.scrapeData().then(function (response) {
+        console.log(response);
+
+        var database = require('../database.json');
+
+        return res.status(200).json({
+          success: true,
+          data: database
+        });
+      });
+    });
+  },
   search: function search(req, res) {
     return new Promise(function (resolve, reject) {
       var database = require('../database.json');

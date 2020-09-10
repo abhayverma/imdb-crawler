@@ -39,6 +39,9 @@ OR
 node .
 ```
 
+Please wait until the server crawls the initial set of movies from IMDB. Start the client once you see the "Crawling completed" message on your terminal window running the server instance.
+
+Start a new terminal window to run the client instance, move inside the client directory of your project repo.
 ### Client:
 ```
 cd client

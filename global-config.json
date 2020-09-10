@@ -24,7 +24,7 @@
     "url": "http://localhost:3000",
     "search": "http://localhost:3000/api/crawler/search",
     "imdbUrl": "https://www.imdb.com",
-    "scrapeData": "http://localhost:3000/api/crawler/runScraper",
+    "reCrawl": "http://localhost:3000/api/crawler/reloadData",
     "port": 3000
   }
 }

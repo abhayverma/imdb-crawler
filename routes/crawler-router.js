@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const crawler = require('../controllers/crawler.js');
 
-router.get('/runScraper', crawler.scrapeData)
+router.get('/reloadData', crawler.reloadData)
 router.get('/search', crawler.search)
 
 module.exports = router;

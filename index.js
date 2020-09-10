@@ -5,6 +5,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const globalConfig = require('./global-config.json');
 const imdbCrawler = require('./routes/crawler-router');
+const crawler = require('./controllers/crawler');
 
 const app = express();
 
@@ -19,5 +20,9 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/crawler', imdbCrawler);
+
+// crawl IMDB on server init
+crawler.scrapeData()
+  .then((res) => { console.log(res) });
 
 app.listen(globalConfig.api.port, () => console.log(`Server running on port ${globalConfig.api.port}`));

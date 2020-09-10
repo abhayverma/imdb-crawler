@@ -1,7 +1,6 @@
 'use strict'
 
 const fs = require("fs");
-let database = [];
 const Crawler = require("crawler");
 const globalConfig = require('../global-config.json');
 
@@ -31,65 +30,37 @@ const crawl = new Crawler({
       });
     }
     if (records.length > 0) {
-      database = records;
+      fs.writeFile('./database.json', JSON.stringify(records, null, 4), err => {
+        if (err) {
+          console.error(err)
+          return;
+        }
+        //file written successfully
+        return;
+      });
     }
     done();
   }
 });
 
-const updateDatabase = (records) => {
-  return new Promise((resolve, reject) => {
-    database = [...new Set([...database, ...records])];
-    fs.writeFile('../database.json', JSON.stringify(database, null, 4), err => {
-      if (err) {
-        console.error(err)
-        return;
-      }
-      //file written successfully
-    });
-    return;
-  });
-}
-
 module.exports = {
-  scrapeData: function (req, res) {
+  scrapeData: function () {
     return new Promise(function (resolve, reject) {
 
-      const sort = req.query.sort ? req.query.sort : globalConfig.crawler.sort;
-      const count = req.query.count ? req.query.count : globalConfig.crawler.count;
-      const groups = req.query.groups ? req.query.groups : globalConfig.crawler.groups;
+      crawl.queue(`${globalConfig.crawler.baseURL}/?count=${globalConfig.crawler.count}&groups=${globalConfig.crawler.groups}&sort=${globalConfig.crawler.sort}`);
 
-      crawl.queue(`${globalConfig.crawler.baseURL}/?count=${count}&groups=${groups}&sort=${sort}`);
-
-      console.log('Crawling');
+      console.log('Crawling started');
       crawl.on('drain', function () {
-        console.log('drained');
-        return resolve(res.status(200).json({
-          success: true,
-          data: database
-        }));
+        return resolve('Crawling completed');
       });
     });
   },
   search: function (req, res) {
     return new Promise(function (resolve, reject) {
-
-      let result = database.filter(record => (req.query.title && record.title.match(new RegExp(req.query.title, 'ig'))) ||
-        (req.query.year && record.year.match(new RegExp(req.query.year, 'ig'))));
-
-      const limit = req.query.limit ? req.query.limit : globalConfig.default.limit;
-      const offset = req.query.offset ? req.query.offset : 0;
-
-      if (!req.query.title && !req.query.year) {
-        result = database;
-      }
-
+      const database = require('../database.json');
       return res.status(200).json({
         success: true,
-        data: {
-          total: result.length,
-          data: result.slice(offset, limit)
-        }
+        data: database
       });
     });
   }

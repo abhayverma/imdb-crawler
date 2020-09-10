@@ -14,7 +14,7 @@ class App extends Component {
   }
 
   getItems() {
-    fetch(`${GlobalConfig.api.scrapeData}`)
+    fetch(`${GlobalConfig.api.search}`)
       .then(response => response.json())
       .then(data => {
         this.setState({ total: data.data.length, items: data.data, ogItems: data.data });

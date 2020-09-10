@@ -1,16 +1,6 @@
 'use strict';
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
-
-function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
-
 var fs = require("fs");
-
-var database = [];
 
 var Crawler = require("crawler");
 
@@ -44,62 +34,37 @@ var crawl = new Crawler({
     }
 
     if (records.length > 0) {
-      database = records;
+      fs.writeFile('./database.json', JSON.stringify(records, null, 4), function (err) {
+        if (err) {
+          console.error(err);
+          return;
+        } //file written successfully
+
+
+        return;
+      });
     }
 
     done();
   }
 });
-
-var updateDatabase = function updateDatabase(records) {
-  return new Promise(function (resolve, reject) {
-    database = _toConsumableArray(new Set([].concat(_toConsumableArray(database), _toConsumableArray(records))));
-    fs.writeFile('../database.json', JSON.stringify(database, null, 4), function (err) {
-      if (err) {
-        console.error(err);
-        return;
-      } //file written successfully
-
-    });
-    return;
-  });
-};
-
 module.exports = {
-  scrapeData: function scrapeData(req, res) {
+  scrapeData: function scrapeData() {
     return new Promise(function (resolve, reject) {
-      var sort = req.query.sort ? req.query.sort : globalConfig.crawler.sort;
-      var count = req.query.count ? req.query.count : globalConfig.crawler.count;
-      var groups = req.query.groups ? req.query.groups : globalConfig.crawler.groups;
-      crawl.queue("".concat(globalConfig.crawler.baseURL, "/?count=").concat(count, "&groups=").concat(groups, "&sort=").concat(sort));
-      console.log('Crawling');
+      crawl.queue("".concat(globalConfig.crawler.baseURL, "/?count=").concat(globalConfig.crawler.count, "&groups=").concat(globalConfig.crawler.groups, "&sort=").concat(globalConfig.crawler.sort));
+      console.log('Crawling started');
       crawl.on('drain', function () {
-        console.log('drained');
-        return resolve(res.status(200).json({
-          success: true,
-          data: database
-        }));
+        return resolve('Crawling completed');
       });
     });
   },
   search: function search(req, res) {
     return new Promise(function (resolve, reject) {
-      var result = database.filter(function (record) {
-        return req.query.title && record.title.match(new RegExp(req.query.title, 'ig')) || req.query.year && record.year.match(new RegExp(req.query.year, 'ig'));
-      });
-      var limit = req.query.limit ? req.query.limit : globalConfig["default"].limit;
-      var offset = req.query.offset ? req.query.offset : 0;
-
-      if (!req.query.title && !req.query.year) {
-        result = database;
-      }
+      var database = require('../database.json');
 
       return res.status(200).json({
         success: true,
-        data: {
-          total: result.length,
-          data: result.slice(offset, limit)
-        }
+        data: database
       });
     });
   }
